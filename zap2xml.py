@@ -28,6 +28,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+import urllib3
 import xml.etree.ElementTree as ET
 
 
@@ -37,7 +38,7 @@ def get_args():
       epilog='This tool is noisy to stdout; '
           'with cron use chronic from moreutils.')
   parser.add_argument(
-      '--aid', dest='zap_aid', type=str, default='gapzap',
+      '--aid', dest='zap_aid', type=str, default='orbebb',
       help='Raw zap2it input parameter.  (Affiliate ID?)')
   parser.add_argument(
       '-c', '--country', dest='zap_country', type=str, default='USA',
@@ -84,7 +85,10 @@ def get_cached(cache_dir, cache_key, delay, url):
   else:
     print('Fetching:  ', url)
     try:
-      resp = urllib.request.urlopen(url)
+      # resp = urllib.request.urlopen(url)
+      headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0'}
+      req = urllib.request.Request(url, headers=headers)
+      resp = urllib.request.urlopen(req)
       result = resp.read()
     except urllib.error.HTTPError as e:
       if e.code == 400:
